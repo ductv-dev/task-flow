@@ -1,9 +1,10 @@
 import { z } from "zod";
 
 export const LoginSchema = z.object({
-  username: z
+  email: z
     .string()
-    .min(1, { message: "Username không được để trống" })
+    .min(1, { message: "Email không được để trống" })
+    .email("Email không hợp lệ")
     .trim(),
 
   password: z.string().min(6, { message: "Mật khẩu phải có ít nhất 6 ký tự" }),
@@ -13,10 +14,13 @@ export type LoginType = z.infer<typeof LoginSchema>;
 
 export const RegisterSchema = z
   .object({
-    username: z
+    email: z
       .string()
-      .min(1, { message: "Username không được để trống" })
+      .min(1, { message: "Email không được để trống" })
+      .email("Email không hợp lệ")
       .trim(),
+
+    name: z.string().min(1, { message: "Tên không được để trống" }),
 
     password: z
       .string()
