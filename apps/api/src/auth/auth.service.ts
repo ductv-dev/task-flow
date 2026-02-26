@@ -1,7 +1,7 @@
-import { 
-  Injectable, 
-  ConflictException, 
-  UnauthorizedException 
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -12,8 +12,8 @@ import { RegisterDto } from './dto/register.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService, 
-    private jwtService: JwtService
+    private prisma: PrismaService,
+    private jwtService: JwtService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -42,7 +42,7 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email }
+      where: { email: dto.email },
     });
     if (!user) {
       throw new UnauthorizedException('Tài khoản hoặc mật khẩu không đúng');
@@ -53,20 +53,20 @@ export class AuthService {
       throw new UnauthorizedException('Tài khoản hoặc mật khẩu không đúng');
     }
 
-    const payload = { 
-      sub: user.id, 
+    const payload = {
+      sub: user.id,
       email: user.email,
-      name: user.name 
+      name: user.name,
     };
 
     return {
       message: 'Đăng nhập thành công',
-      accessToken: await this.jwtService.signAsync(payload), 
+      accessToken: await this.jwtService.signAsync(payload),
       user: {
         id: user.id,
         email: user.email,
-        name: user.name
-      }
+        name: user.name,
+      },
     };
   }
 }

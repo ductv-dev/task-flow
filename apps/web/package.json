@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.37.1",
     "@workspace/ui": "workspace:*",
     "dotenv": "^17.2.4",
     "lucide-react": "^0.563.0",
