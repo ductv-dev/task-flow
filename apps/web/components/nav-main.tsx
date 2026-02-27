@@ -1,21 +1,14 @@
 "use client";
-import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@workspace/ui/components/collapsible";
+
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@workspace/ui/components/sidebar";
-import { ChevronRightIcon } from "lucide-react";
 
 export function NavMain({
   items,
@@ -24,55 +17,35 @@ export function NavMain({
     title: string;
     url: string;
     icon?: React.ReactNode;
-    isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
   }[];
 }) {
+  const searchParams = useSearchParams();
+  const currentFilter = searchParams?.get("filter") || "all";
+
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>Công việc</SidebarGroupLabel>
       <SidebarMenu>
-        <SidebarMenuButton
-          tooltip="Quick Create"
-          className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
-        >
-          <IconCirclePlusFilled />
-          <span>Quick Create</span>
-        </SidebarMenuButton>
-        {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            defaultOpen={item.isActive}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
+        {items.map((item) => {
+          // Check if active based on filter param
+          let isActive = false;
+          if (item.url === "/dashboard" && currentFilter === "all") isActive = true;
+          if (item.url === "/dashboard?filter=today" && currentFilter === "today")
+            isActive = true;
+          if (item.url === "/dashboard?filter=completed" && currentFilter === "completed")
+            isActive = true;
+
+          return (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
+                <Link href={item.url}>
                   {item.icon}
                   <span>{item.title}</span>
-                  <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
-          </Collapsible>
-        ))}
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );

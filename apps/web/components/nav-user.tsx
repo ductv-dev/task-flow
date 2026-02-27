@@ -29,15 +29,29 @@ import {
   LogOutIcon,
 } from "lucide-react";
 
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/auth-store";
+import { logoutAction } from "@/actions/logout.action";
+
 export function NavUser({
   user,
 }: {
   user: {
-    name: string;
+    name?: string;
     email: string;
+    avatar?: string;
   };
 }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
+  const logoutStore = useAuthStore((state) => state.logout);
+
+  const handleLogout = async () => {
+    await logoutAction();
+    logoutStore();
+    router.push("/auth/login");
+    router.refresh(); // Refresh to ensure layout gets updated from the server
+  };
 
   return (
     <SidebarMenu>
@@ -49,11 +63,11 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src="/avatars/shadcn.jpg" alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarImage src={user.avatar || ""} alt={user.name || "User"} />
+                <AvatarFallback className="rounded-lg">{user.name?.charAt(0) || "U"}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{user.name || "Người dùng"}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
               <ChevronsUpDownIcon className="ml-auto size-4" />
@@ -68,41 +82,25 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src="/avatars/shadcn.jpg" alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarImage src={user.avatar || ""} alt={user.name || "User"} />
+                  <AvatarFallback className="rounded-lg">{user.name?.charAt(0) || "U"}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">{user.name || "Người dùng"}</span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <SparklesIcon />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/dashboard/profile")} className="cursor-pointer">
                 <BadgeCheckIcon />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCardIcon />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BellIcon />
-                Notifications
+                Hồ sơ cá nhân
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
               <LogOutIcon />
-              Log out
+              Đăng xuất
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

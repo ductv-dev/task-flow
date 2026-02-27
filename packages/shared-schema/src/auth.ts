@@ -35,3 +35,25 @@ export const RegisterSchema = z
   });
 
 export type RegisterType = z.infer<typeof RegisterSchema>;
+
+export const ChangePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(6, { message: "Mật khẩu hiện tại phải có ít nhất 6 ký tự" }),
+
+    newPassword: z
+      .string()
+      .min(6, { message: "Mật khẩu mới phải có ít nhất 6 ký tự" }),
+
+    confirmPassword: z.string().min(6, {
+      message: "Mật khẩu xác nhận phải có ít nhất 6 ký tự",
+    }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Mật khẩu xác nhận không khớp",
+    path: ["confirmPassword"],
+  });
+
+export type ChangePasswordType = z.infer<typeof ChangePasswordSchema>;
+
